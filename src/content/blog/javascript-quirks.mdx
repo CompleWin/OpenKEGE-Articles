@@ -6,7 +6,6 @@ category: 'Python'
 ---
 
 import { Quiz } from '../../components/Quiz.tsx'
-import { LiveEditor } from '../../components/LiveEditor.tsx'
 
 # Тонкости JavaScript
 
@@ -31,26 +30,34 @@ import { LiveEditor } from '../../components/LiveEditor.tsx'
 
 Чтобы безопасно проверить на null, используй строгое равенство:
 
-<LiveEditor
-  client:visible
-  initialCode={`const values = [null, undefined, 0, '', false];
+import { PythonEditor } from '../../components/PythonEditor.tsx'
 
-values.forEach(v => {
-  console.log(v, '===', v === null ? 'null' : 'не null');
-});`}
+<PythonEditor
+  client:only="react"
+  initialCode={`# Задача 1 ЕГЭ: сумма цифр числа
+n = 1234
+result = 0
+while n > 0:
+    result += n % 10
+    n //= 10
+print(result)`}
 />
 
-## Array.map и reduce
+чтчтотчо
+тото\
 
-Попробуй сам — измени массив или функции:
+ва
+вава
 
-<LiveEditor
-  client:visible
-  initialCode={`const numbers = [1, 2, 3, 4, 5];
 
-const doubled = numbers.map(n => n * 2);
-const sum = numbers.reduce((a, b) => a + b, 0);
-
-console.log('Удвоенные:', doubled);
-console.log('Сумма:', sum);`}
+<PythonEditor
+  client:only="react"
+  initialCode={`# Задача 1 ЕГЭ: сумма цифр числа
+n = 1234
+result = 0
+while n > 0:
+    result += n % 10
+    n //= 10
+print(result)`}
 />
+
