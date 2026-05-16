@@ -2,6 +2,7 @@
 title: "All, any и примеры задач"
 category: "Python"
 pubDate: 'May 05 2026'
+heroImage: '../../assets/my-very-first-article.jpg'
 description: "Разбираем встроенные функции all и any на задачах ЕГЭ"
 ---
 

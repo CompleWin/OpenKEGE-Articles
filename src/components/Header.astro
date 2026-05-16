@@ -5,14 +5,16 @@ import { ABOUT, ARTICLES } from '../consts.ts'
 ---
 
 <header class="bg-white shadow-md px-2">
-  <nav class="flex items-center max-w-full mx-10 py-2">
-    <div class="flex-1 flex justify-start">
-      <h2 class="text-base font-bold m-0">
-        <a href="/" class="no-underline text-ink">{SITE_TITLE}</a>
+  <nav class="flex items-center max-w-full mx-10">
+    <div class="flex-1 flex justify-start ">
+      <h2 class="text-3xl font-bold m-0">
+        <a href="/" class="no-underline text-ink flex flex-col items-center hover:text-accent transition-colors">OpenKEGE
+          <span class="italic text-base font-light">Articles</span>
+        </a>
       </h2>
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 text-xl">
       <HeaderLink href="/">{ARTICLES}</HeaderLink>
       <HeaderLink href="/about">{ABOUT}</HeaderLink>
     </div>
