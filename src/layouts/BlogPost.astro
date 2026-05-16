@@ -5,13 +5,24 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import LikeButton from '../components/LikeButton.astro';
 
 type PostData = CollectionEntry<'articles'>['data'];
 type Props = Omit<PostData, 'category' | 'author'> & {
   category?: PostData['category'];
   author?: PostData['author'];
+  slug: string;
 };
-const { title, description, pubDate, updatedDate, heroImage, category, author } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  heroImage,
+  category,
+  author,
+  slug
+} = Astro.props;
 ---
 
 <html lang="ru">
@@ -60,6 +71,9 @@ const { title, description, pubDate, updatedDate, heroImage, category, author } 
             <hr class="mt-4" />
           </header>
           <slot />
+          <div class="flex justify-end">
+            <LikeButton slug={slug} />
+          </div>
         </div>
       </article>
     </main>

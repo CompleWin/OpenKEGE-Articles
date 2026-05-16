@@ -1,0 +1,84 @@
+---
+interface Props {
+  slug: string;
+}
+const { slug } = Astro.props;
+---
+
+<like-button data-slug={slug}>
+  <button type="button">
+    <span class="icon">♡</span>
+    <span class="count">–</span>
+  </button>
+</like-button>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  class LikeButton extends HTMLElement {
+    connectedCallback() {
+      const slug = this.dataset.slug!;
+      const button = this.querySelector('button')!;
+      const countEl = this.querySelector('.count')!;
+      const iconEl = this.querySelector('.icon')!;
+
+      const storageKey = `liked:${slug}`;
+      const alreadyLiked = localStorage.getItem(storageKey) === '1';
+
+      if (alreadyLiked) {
+        iconEl.textContent = '♥';
+        button.disabled = true;
+      }
+
+      supabase
+      .from('likes')
+      .select('count')
+      .eq('post_slug', slug)
+      .maybeSingle()
+      .then(({ data }) => {
+        countEl.textContent = String(data?.count ?? 0);
+      });
+
+      button.addEventListener('click', async () => {
+        if (localStorage.getItem(storageKey) === '1') return;
+
+        button.disabled = true;
+        const { data, error } = await supabase.rpc('increment_likes', { slug });
+
+        if (error) {
+          button.disabled = false;
+          console.error(error);
+          return;
+        }
+
+        countEl.textContent = String(data);
+        iconEl.textContent = '♥';
+        localStorage.setItem(storageKey, '1');
+      });
+    }
+  }
+
+  customElements.define('like-button', LikeButton);
+</script>
+
+<style>
+  button {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    background: white;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  button:disabled { cursor: default; }
+  button:hover:not(:disabled) { background: #fafafa; }
+  .icon { color: #e25555; }
+</style>
