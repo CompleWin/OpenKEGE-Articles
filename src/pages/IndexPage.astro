@@ -1,0 +1,88 @@
+!---
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+
+const posts = await getCollection('articles');
+
+const grouped = posts.reduce((acc, post) => {
+  const cat = post.data.category;
+  (acc[cat] ||= []).push(post);
+  return acc;
+}, {} as Record<string, typeof posts>);
+
+for (const cat in grouped) {
+  grouped[cat].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+}
+
+const order = ['Python', 'Задания', 'Экзамен'];
+const categories = Object.keys(grouped).sort((a, b) => {
+  const ia = order.indexOf(a);
+  const ib = order.indexOf(b);
+  if (ia === -1 && ib === -1) return a.localeCompare(b);
+  if (ia === -1) return 1;
+  if (ib === -1) return -1;
+  return ia - ib;
+});
+---
+
+<section>
+  <h1>База знаний</h1>
+  {categories.map(category => (
+    <div class="category">
+      <h2>{category}</h2>
+      <ul>
+        {grouped[category].map(post => (
+          <li>
+            <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+            <span class="date">
+              <FormattedDate date={post.data.pubDate} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</section>
+
+<style>
+  h1 {
+    margin-bottom: 0.5em;
+  }
+
+  section {
+    max-width: 100%;
+  }
+  .category {
+    margin-bottom: 2.5rem;
+  }
+  .category h2 {
+    font-size: 1.953em;
+    margin-bottom: 0.5em;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1em;
+    padding: 0.5em 0;
+    border-bottom: 1px solid rgb(var(--gray-light));
+  }
+  li a {
+    text-decoration: none;
+    color: rgb(var(--black));
+    transition: color 0.2s ease;
+  }
+  li a:hover {
+    color: var(--accent);
+  }
+  .date {
+    color: rgb(var(--gray));
+    font-size: 0.875em;
+    flex-shrink: 0;
+  }
+</style>
