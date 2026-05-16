@@ -1,17 +1,18 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
-import LikeButton from '../components/LikeButton.astro';
+import { Image } from 'astro:assets'
+import type { CollectionEntry } from 'astro:content'
+import BaseHead from '../components/BaseHead.astro'
+import Footer from '../components/Footer.astro'
+import FormattedDate from '../components/FormattedDate.astro'
+import Header from '../components/Header.astro'
+import LikeButton from '../components/LikeButton.astro'
 
 type PostData = CollectionEntry<'articles'>['data'];
 type Props = Omit<PostData, 'category' | 'author'> & {
   category?: PostData['category'];
   author?: PostData['author'];
-  slug: string;
+  slug?: string;
+  showMeta?: boolean;
 };
 const {
   title,
@@ -21,62 +22,69 @@ const {
   heroImage,
   category,
   author,
-  slug
-} = Astro.props;
+  slug,
+  showMeta = true,
+} = Astro.props
 ---
 
 <html lang="ru">
-  <head>
-    <BaseHead title={title} description={description} />
-  </head>
+<head>
+  <BaseHead title={title} description={description} />
+</head>
 
-  <body class="min-h-screen flex flex-col text-paper">
-    <Header />
-    <main class="w-full flex-1">
-      <article>
-        {heroImage && (
-          <div class="w-full max-w-xl mx-auto px-4 mt-8">
-            <Image
-              width={1020}
-              height={510}
-              src={heroImage}
-              alt=""
-              class="block mx-auto rounded-xl shadow-card"
-            />
-          </div>
-        )}
-        <div class="prose max-w-4xl mx-auto px-4 py-8">
-          <header class="mb-8 text-center">
-            <div class="flex flex-col items-center">
-              <h1 class="text-4xl font-bold text-ink leading-tight mb-2">{title}</h1>
-              <div class="flex items-center gap-3 text-muted">
-                {category && (
-                  <>
-                    <span class="text-tag">#{category}</span>
-                    <span>•</span>
-                  </>
-                )}
-                <FormattedDate date={pubDate} />
-                <span>•</span>
-                <a href="https://t.me/nikolayivakhnenko"
-                   target="_blank"
-                   class="hover:text-accent! transition-colors text-muted! no-underline!">{author}</a>
-              </div>
-              {updatedDate && (
-                <div class="italic text-muted text-sm mt-1">
-                  Обновлено <FormattedDate date={updatedDate} />
-                </div>
+<body class="min-h-screen flex flex-col text-paper">
+<Header />
+<main class="w-full flex-1">
+  <article>
+    {heroImage && (
+      <div class="w-full max-w-xl mx-auto px-4 mt-8">
+        <Image
+          width={1020}
+          height={510}
+          src={heroImage}
+          alt=""
+          class="block mx-auto rounded-xl shadow-card"
+        />
+      </div>
+    )}
+    <div class="prose max-w-4xl mx-auto px-4 py-8">
+      <header class={`text-center ${showMeta ? 'mb-8' : 'mb-0'}`}>
+        <div class="flex flex-col items-center">
+          <h1
+            class="text-4xl font-bold text-ink leading-tight mb-2">{title}</h1>
+          {showMeta && (
+            <div class="flex items-center gap-3 text-muted">
+              {category && (
+                <>
+                  <span class="text-tag">#{category}</span>
+                  <span>•</span>
+                </>
               )}
+              <FormattedDate date={pubDate} />
+              <span>•</span>
+              <a href="https://t.me/nikolayivakhnenko"
+                 target="_blank"
+                 class="hover:text-accent! transition-colors text-muted! no-underline!">{author}</a>
             </div>
-            <hr class="mt-4" />
-          </header>
-          <slot />
-          <div class="flex justify-end">
-            <LikeButton slug={slug} />
-          </div>
+          )}
+          {showMeta && updatedDate && (
+            <div class="italic text-muted text-sm mt-1">
+              Обновлено
+              <FormattedDate date={updatedDate} />
+            </div>
+          )}
         </div>
-      </article>
-    </main>
-    <Footer />
-  </body>
+        <hr class={showMeta ? 'mt-4' : '!mt-2'} />
+      </header>
+      <slot />
+      {showMeta && slug && (
+        <div class="flex justify-end">
+          <LikeButton slug={slug} />
+        </div>
+      )}
+    </div>
+  </article>
+</main>
+<Footer />
+</body>
 </html>
