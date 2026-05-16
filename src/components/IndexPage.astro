@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import FormattedDate from './FormattedDate.astro';
+
+const posts = await getCollection('articles');
+
+const grouped = posts.reduce((acc, post) => {
+  const cat = post.data.category;
+  (acc[cat] ||= []).push(post);
+  return acc;
+}, {} as Record<string, typeof posts>);
+
+for (const cat in grouped) {
+  grouped[cat].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+}
+
+const order = ['Python', 'Задания', 'Экзамен'];
+const categories = Object.keys(grouped).sort((a, b) => {
+  const ia = order.indexOf(a);
+  const ib = order.indexOf(b);
+  if (ia === -1 && ib === -1) return a.localeCompare(b);
+  if (ia === -1) return 1;
+  if (ib === -1) return -1;
+  return ia - ib;
+});
+---
+
+<section>
+  <h1 class="text-4xl font-bold text-ink mb-8">База знаний</h1>
+
+  {categories.map(category => (
+    <div class="mb-10">
+      <h2 class="text-2xl font-bold text-ink mb-3">{category}</h2>
+      <ul>
+        {grouped[category].map(post => (
+          <li class="flex items-baseline justify-between gap-4 py-2 border-b border-soft">
+            <a
+              href={`/blog/${post.id}/`}
+              class="text-ink no-underline hover:text-accent transition-colors"
+            >
+              {post.data.title}
+            </a>
+            <span class="text-sm text-muted shrink-0">
+              <FormattedDate date={post.data.pubDate} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</section>

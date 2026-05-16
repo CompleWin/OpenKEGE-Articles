@@ -3,19 +3,19 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import IndexPage from './IndexPage.astro'
+import IndexPage from '../components/IndexPage.astro'
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<IndexPage />
-		</main>
-		<Footer />
-	</body>
+<html lang="ru">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body class="min-h-screen flex flex-col text-paper">
+    <Header />
+    <main class="max-w-3xl w-full mx-auto py-12 flex-1">
+      <IndexPage />
+    </main>
+    <Footer />
+  </body>
 </html>
