@@ -1,5 +1,6 @@
 @import "tailwindcss";
-
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/700.css";
 @theme {
   --color-accent: #2337ff;
   --color-accent-dark: #000d8a;
@@ -63,4 +64,9 @@ body {
   border: none;
   border-top: 1px solid var(--color-soft);
   margin: 2rem 0;
+}
+
+code, pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-feature-settings: "calt" 0;
 }
