@@ -1,0 +1,56 @@
+---
+title: 'Тонкости JavaScript'
+description: 'fgfgfg'
+pubDate: 'May 16 2026'
+category: 'Python'
+---
+
+import { Quiz } from '../../components/Quiz.tsx'
+import { LiveEditor } from '../../components/LiveEditor.tsx'
+
+# Тонкости JavaScript
+
+В JavaScript есть несколько известных «странностей», которые путают
+даже опытных разработчиков. Разберём пару из них.
+
+## typeof null
+
+<Quiz
+  client:load
+  options={['"null"', '"object"', '"undefined"', 'TypeError']}
+  correct={1}
+  explanations={{
+    0: 'Не совсем — typeof возвращает не само значение, а его тип строкой.',
+    1: 'Верно! Это известный баг JavaScript с первой версии языка. typeof null возвращает "object" — исправить уже не могут, чтобы не сломать миллионы сайтов.',
+    2: 'Нет — undefined и null это разные значения с разными типами.',
+    3: 'Нет, ошибки не будет — typeof работает с любым значением.'
+  }}
+>
+  Что вернет <code>[].length</code>?
+</Quiz>
+
+Чтобы безопасно проверить на null, используй строгое равенство:
+
+<LiveEditor
+  client:visible
+  initialCode={`const values = [null, undefined, 0, '', false];
+
+values.forEach(v => {
+  console.log(v, '===', v === null ? 'null' : 'не null');
+});`}
+/>
+
+## Array.map и reduce
+
+Попробуй сам — измени массив или функции:
+
+<LiveEditor
+  client:visible
+  initialCode={`const numbers = [1, 2, 3, 4, 5];
+
+const doubled = numbers.map(n => n * 2);
+const sum = numbers.reduce((a, b) => a + b, 0);
+
+console.log('Удвоенные:', doubled);
+console.log('Сумма:', sum);`}
+/>

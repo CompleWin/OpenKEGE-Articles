@@ -4,9 +4,11 @@ import { defineConfig, fontProviders } from 'astro/config';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 
+import react from '@astrojs/react';
+
 export default defineConfig({
   site: 'https://example.com',
-  integrations: [mdx(), sitemap()],
+  integrations: [mdx(), sitemap(), react()],
 
   fonts: [
     {
