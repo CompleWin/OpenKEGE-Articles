@@ -33,7 +33,7 @@ jobs:
 
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: https://articles.openkege.ru
 
     steps:
       - name: Deploy to GitHub Pages
