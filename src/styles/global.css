@@ -10,7 +10,8 @@
   --color-muted: rgb(96 115 159);
   --color-soft: rgb(229 233 240);
   --color-paper: rgb(34 41 57);
-  --color-tag: rgb(117 4 141 / 0.59);
+  --color-tag: rgb(242 185 255);
+  --color-link: rgb(182 0 255);
 
   --shadow-card: 0 2px 6px rgba(96, 115, 159, 0.25),
   0 8px 24px rgba(96, 115, 159, 0.33),
@@ -149,4 +150,8 @@ code, pre {
 
 .prose tr:nth-child(even) td {
   background-color: rgba(229, 233, 240, 0.3);
+}
+
+a.link {
+  color: var(--color-link) !important;
 }
