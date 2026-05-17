@@ -155,3 +155,77 @@ code, pre {
 a.link {
   color: var(--color-link) !important;
 }
+
+/* LongDivision component */
+.ld {
+  display: inline-block;
+  margin: 1em 0;
+  font-family: ui-monospace, 'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, Consolas, monospace;
+  line-height: 1.4;
+  color: inherit;
+}
+.ld__body {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0.4ch;
+}
+.ld__grid {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+.ld__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+}
+.ld__cell--bar {
+  border-bottom: 1px solid currentColor;
+}
+.ld__divider {
+  width: 1px;
+  background: currentColor;
+  align-self: stretch;
+}
+.ld__answer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0 0.5ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.ld__divisor {
+  padding-bottom: 0.15em;
+}
+.ld__quotient {
+  border-top: 1px solid currentColor;
+  padding-top: 0.15em;
+}
+.ld__caption {
+  margin-top: 0.6em;
+  font-family: inherit;
+  font-style: italic;
+  opacity: 0.75;
+  text-align: center;
+  font-size: 0.9em;
+}
+.ld--error {
+  color: #c0392b;
+  border: 1px dashed currentColor;
+  padding: 0.5em 1em;
+}
+.ld__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

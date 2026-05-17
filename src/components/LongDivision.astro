@@ -6,7 +6,7 @@ export interface Props {
   hideMinus?: boolean;
 }
 
-const { dividend, divisor, caption, hideMinus = false } = Astro.props;
+const { dividend, divisor, caption, hideMinus = false } = Astro.props
 
 type Step = {
   endCol: number;
@@ -30,40 +30,42 @@ type Computed = {
   dividendNegative: boolean;
 };
 
-function compute(d: number, dv: number): Computed | null {
-  if (!Number.isInteger(d) || !Number.isInteger(dv)) return null;
-  if (dv === 0) return null;
+function compute (d: number, dv: number): Computed | null {
+  if (!Number.isInteger(d) || !Number.isInteger(dv)) return null
+  if (dv === 0) return null
 
-  const absD = Math.abs(d);
-  const absDv = Math.abs(dv);
+  const absD = Math.abs(d)
+  const absDv = Math.abs(dv)
 
-  const digits = String(absD).split('').map(Number);
-  const steps: Step[] = [];
-  const quotientDigits: number[] = [];
-  let current = 0;
-  let started = false;
+  const digits = String(absD).split('').map(Number)
+  const steps: Step[] = []
+  const quotientDigits: number[] = []
+  let current = 0
+  let started = false
 
   for (let i = 0; i < digits.length; i++) {
-    current = current * 10 + digits[i];
+    current = current * 10 + digits[i]
     if (current >= absDv) {
-      const q = Math.floor(current / absDv);
-      const sub = q * absDv;
-      const rem = current - sub;
-      quotientDigits.push(q);
-      steps.push({ endCol: i, currentValue: current, subtracted: sub, remainder: rem });
-      current = rem;
-      started = true;
+      const q = Math.floor(current / absDv)
+      const sub = q * absDv
+      const rem = current - sub
+      quotientDigits.push(q)
+      steps.push(
+        { endCol: i, currentValue: current, subtracted: sub, remainder: rem })
+      current = rem
+      started = true
     } else if (started) {
-      quotientDigits.push(0);
+      quotientDigits.push(0)
     }
   }
 
-  const absQuotient = quotientDigits.length ? parseInt(quotientDigits.join(''), 10) : 0;
-  const absRemainder = current;
+  const absQuotient = quotientDigits.length ? parseInt(quotientDigits.join(''),
+    10) : 0
+  const absRemainder = current
 
-  const quotientSign = (d < 0) !== (dv < 0) ? -1 : 1;
-  const quotient = absQuotient === 0 ? 0 : quotientSign * absQuotient;
-  const remainder = absRemainder === 0 ? 0 : (d < 0 ? -1 : 1) * absRemainder;
+  const quotientSign = (d < 0) !== (dv < 0) ? -1 : 1
+  const quotient = absQuotient === 0 ? 0 : quotientSign * absQuotient
+  const remainder = absRemainder === 0 ? 0 : (d < 0 ? -1 : 1) * absRemainder
 
   return {
     digits,
@@ -71,71 +73,71 @@ function compute(d: number, dv: number): Computed | null {
     quotient,
     remainder,
     dividendNegative: d < 0,
-  };
+  }
 }
 
-function buildCells(data: Computed, hideMinus: boolean) {
-  const cells: Cell[] = [];
-  let row = 0;
-  const isNeg = data.dividendNegative;
+function buildCells (data: Computed, hideMinus: boolean) {
+  const cells: Cell[] = []
+  let row = 0
+  const isNeg = data.dividendNegative
 
   if (isNeg) {
-    cells.push({ row: 0, col: 0, content: '−' });
+    cells.push({ row: 0, col: 0, content: '−' })
   }
   data.digits.forEach((d, i) => {
-    cells.push({ row, col: i + 1, content: String(d) });
-  });
-  row++;
+    cells.push({ row, col: i + 1, content: String(d) })
+  })
+  row++
 
   data.steps.forEach((step, idx) => {
-    const subStr = String(step.subtracted);
-    const subEnd = step.endCol + 1;
-    const subStart = subEnd - subStr.length + 1;
+    const subStr = String(step.subtracted)
+    const subEnd = step.endCol + 1
+    const subStart = subEnd - subStr.length + 1
 
     if (isNeg) {
-      cells.push({ row, col: subStart - 1, content: '−', underline: true });
+      cells.push({ row, col: subStart - 1, content: '−', underline: true })
     } else if (!hideMinus) {
-      cells.push({ row, col: subStart - 1, content: '−' });
+      cells.push({ row, col: subStart - 1, content: '−' })
     }
     subStr.split('').forEach((dg, i) => {
-      cells.push({ row, col: subStart + i, content: dg, underline: true });
-    });
-    row++;
+      cells.push({ row, col: subStart + i, content: dg, underline: true })
+    })
+    row++
 
-    const isLast = idx === data.steps.length - 1;
+    const isLast = idx === data.steps.length - 1
     if (!isLast) {
-      const nxt = data.steps[idx + 1];
-      const s = String(nxt.currentValue);
-      const e = nxt.endCol + 1;
-      const start = e - s.length + 1;
+      const nxt = data.steps[idx + 1]
+      const s = String(nxt.currentValue)
+      const e = nxt.endCol + 1
+      const start = e - s.length + 1
       if (isNeg) {
-        cells.push({ row, col: start - 1, content: '−' });
+        cells.push({ row, col: start - 1, content: '−' })
       }
       s.split('').forEach((dg, i) => {
-        cells.push({ row, col: start + i, content: dg });
-      });
+        cells.push({ row, col: start + i, content: dg })
+      })
     } else {
-      const s = String(step.remainder);
-      const e = step.endCol + 1;
-      const start = e - s.length + 1;
+      const s = String(step.remainder)
+      const e = step.endCol + 1
+      const start = e - s.length + 1
       if (isNeg && step.remainder !== 0) {
-        cells.push({ row, col: start - 1, content: '−' });
+        cells.push({ row, col: start - 1, content: '−' })
       }
       s.split('').forEach((dg, i) => {
-        cells.push({ row, col: start + i, content: dg });
-      });
+        cells.push({ row, col: start + i, content: dg })
+      })
     }
-    row++;
-  });
+    row++
+  })
 
-  return { cells, numRows: row };
+  return { cells, numRows: row }
 }
 
-const data = compute(dividend, divisor);
-const grid = data ? buildCells(data, hideMinus) : null;
-const numCols = data ? data.digits.length + 1 : 0;
+const data = compute(dividend, divisor)
+const grid = data ? buildCells(data, hideMinus) : null
+const numCols = data ? data.digits.length + 1 : 0
 
-const fmt = (n: number) => String(n).replace('-', '−');
+const fmt = (n: number) => String(n).replace('-', '−')
 ---
 
 {data && grid ? (
@@ -160,9 +162,12 @@ const fmt = (n: number) => String(n).replace('-', '−');
       <span class="ld__quotient">{fmt(data.quotient)}</span>
     </div>
   </div>
-  {caption && <figcaption class="ld__caption">{caption}</figcaption>}
+  {caption &&
+    <figcaption class="ld__caption">{caption}</figcaption>}
   <span class="ld__sr">
-      {dividend} ÷ {divisor} = {data.quotient}{data.remainder !== 0 ? `, остаток ${data.remainder}` : ''}
+      {dividend} ÷ {divisor} = {data.quotient}{data.remainder !== 0
+    ? `, остаток ${data.remainder}`
+    : ''}
     </span>
 </figure>
   ) : (
@@ -170,78 +175,3 @@ const fmt = (n: number) => String(n).replace('-', '−');
   Некорректные аргументы: оба числа целые, делитель ≠ 0.
 </div>
   )}
-
-<style>
-  .ld {
-    display: inline-block;
-    margin: 1em 0;
-    font-family: ui-monospace, 'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, Consolas, monospace;
-    line-height: 1.4;
-    color: inherit;
-  }
-  .ld__body {
-    display: inline-flex;
-    align-items: stretch;
-    gap: 0.4ch;
-  }
-  .ld__grid {
-    display: grid;
-    justify-items: center;
-    align-items: center;
-  }
-  .ld__cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-variant-numeric: tabular-nums;
-    box-sizing: border-box;
-  }
-  .ld__cell--bar {
-    border-bottom: 1px solid currentColor;
-  }
-  .ld__divider {
-    width: 1px;
-    background: currentColor;
-    align-self: stretch;
-  }
-  .ld__answer {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    padding: 0 0.5ch;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-  }
-  .ld__divisor {
-    padding-bottom: 0.15em;
-  }
-  .ld__quotient {
-    border-top: 1px solid currentColor;
-    padding-top: 0.15em;
-  }
-  .ld__caption {
-    margin-top: 0.6em;
-    font-family: inherit;
-    font-style: italic;
-    opacity: 0.75;
-    text-align: center;
-    font-size: 0.9em;
-  }
-  .ld--error {
-    color: #c0392b;
-    border: 1px dashed currentColor;
-    padding: 0.5em 1em;
-  }
-  .ld__sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-</style>
