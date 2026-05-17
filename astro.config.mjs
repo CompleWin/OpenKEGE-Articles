@@ -7,7 +7,7 @@ import remarkMath from 'remark-math';
 import react from '@astrojs/react';
 
 export default defineConfig({
-  site: 'https://example.com',
+  site: 'https://articles.openkege.ru',
   integrations: [mdx(), sitemap(), react()],
 
   fonts: [
