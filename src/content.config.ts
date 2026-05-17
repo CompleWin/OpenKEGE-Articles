@@ -4,7 +4,7 @@ import { z } from 'astro/zod';
 import { CATEGORIES } from './consts.ts'
 
 const articles = defineCollection({
-	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
+	loader: glob({ base: './src/content/articles', pattern: '**/*.{md,mdx}' }),
 	schema: ({ image }) =>
 		z.object({
 			title: z.string(),

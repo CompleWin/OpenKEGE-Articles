@@ -1,10 +1,10 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import ArticlePost from '../layouts/ArticlePost.astro';
 import AboutImage from '../assets/u_need_smth.jpg'
 import { TELEGRAM_CHANNEL, TELEGRAM_ME } from '../consts.ts'
 ---
 
-<Layout
+<ArticlePost
   title="Где я?"
   heroImage={AboutImage}
   description="О проекте OpenKEGE Articles"
@@ -47,7 +47,7 @@ import { TELEGRAM_CHANNEL, TELEGRAM_ME } from '../consts.ts'
     Философия проекта
   </h2>
   <p>
-    Подробнее про философию проекта и полезные ссылки можно найти в этой <a href='/blog/useful-links/'>статье</a>.
+    Подробнее про философию проекта и полезные ссылки можно найти в этой <a href='/article/useful-links/'>статье</a>.
   </p>
 
   <h2>
@@ -57,4 +57,4 @@ import { TELEGRAM_CHANNEL, TELEGRAM_ME } from '../consts.ts'
     Если вы нашли баг, или вы нашли фичу, который быть не должно, или вы хотите пообщаться со мной лично,
     то можете <a href={TELEGRAM_ME} target="_blank">написать мне</a>.
   </p>
-</Layout>
+</ArticlePost>

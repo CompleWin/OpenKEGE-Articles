@@ -29,7 +29,7 @@ const categories = CATEGORIES.filter(cat => grouped[cat]?.length);
         {grouped[category].map(post => (
           <li class="flex items-baseline justify-between gap-4 py-2 border-b border-soft">
             <a
-              href={`/blog/${post.id}/`}
+              href={`/article/${post.id}/`}
               class="text-ink no-underline hover:text-accent transition-colors"
             >
               {post.data.title}
