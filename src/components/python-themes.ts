@@ -46,3 +46,8 @@ export const themes = {
 } as const
 
 export type ThemeName = keyof typeof themes
+
+export const themeLabels: Record<ThemeName, string> = {
+  'pycharm-light': 'PyCharm',
+  'idle': 'IDLE',
+}

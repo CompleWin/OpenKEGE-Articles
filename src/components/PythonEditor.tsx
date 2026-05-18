@@ -4,8 +4,20 @@ import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import Editor from 'react-simple-code-editor'
 import { Highlight, type PrismTheme } from 'prism-react-renderer'
 import { runPython } from './pyodide-manager'
-import  { themes, type ThemeName } from './python-themes.ts'
+import { themes, themeLabels, type ThemeName } from './python-themes'
 
+const THEME_STORAGE_KEY = 'python-editor-theme'
+const THEME_CHANGE_EVENT = 'python-editor-theme-change'
+
+function loadStoredThemeName(): ThemeName | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
+    if (stored && stored in themes) return stored as ThemeName
+  } catch {
+  }
+  return null
+}
 
 export interface PythonEditorProps {
   initialCode: string
@@ -38,7 +50,43 @@ export function PythonEditor({
   const cancelRef = useRef<(() => void) | null>(null)
   const timeoutRef = useRef<number | null>(null)
 
-  const activeTheme: PrismTheme = typeof theme === 'string' ? themes[theme] : theme
+  const hasCustomTheme = typeof theme !== 'string'
+
+  const [themeName, setThemeName] = useState<ThemeName>(
+    typeof theme === 'string' ? theme : 'idle'
+  )
+
+  useEffect(() => {
+    if (hasCustomTheme) return
+    const stored = loadStoredThemeName()
+    if (stored) setThemeName(stored)
+  }, [hasCustomTheme])
+
+  useEffect(() => {
+    if (hasCustomTheme) return
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<ThemeName>).detail
+      if (detail && detail in themes) setThemeName(detail)
+    }
+    window.addEventListener(THEME_CHANGE_EVENT, handler)
+    return () => window.removeEventListener(THEME_CHANGE_EVENT, handler)
+  }, [hasCustomTheme])
+
+  const activeTheme: PrismTheme = hasCustomTheme
+    ? (theme as PrismTheme)
+    : themes[themeName]
+
+  const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const next = e.target.value as ThemeName
+    if (!(next in themes)) return
+    setThemeName(next)
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, next)
+    } catch {
+      // игнорируем
+    }
+    window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: next }))
+  }
 
   useEffect(() => {
     return () => {
@@ -176,21 +224,38 @@ export function PythonEditor({
           <span>Python</span>
         </div>
 
-        {isBusy ? (
-          <button
-            onClick={stopCode}
-            className="px-4 py-1.5 text-sm font-bold text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors cursor-pointer"
-          >
-            ■ Остановить
-          </button>
-        ) : (
-          <button
-            onClick={runCode}
-            className="px-4 py-1.5 text-sm font-bold text-white bg-[color:var(--color-accent)] rounded-md hover:bg-[color:var(--color-accent-dark)] transition-colors cursor-pointer"
-          >
-            ▶ Запустить
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {!hasCustomTheme && (
+            <select
+              value={themeName}
+              onChange={handleThemeChange}
+              aria-label="Тема подсветки"
+              className="text-xs px-2 py-1 rounded-md border border-[color:var(--color-soft)] bg-white text-[color:var(--color-muted)] hover:text-[color:var(--color-ink)] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[color:var(--color-accent)]/20"
+            >
+              {(Object.keys(themes) as ThemeName[]).map((name) => (
+                <option key={name} value={name}>
+                  {themeLabels[name] ?? name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {isBusy ? (
+            <button
+              onClick={stopCode}
+              className="px-4 py-1.5 text-sm font-bold text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors cursor-pointer"
+            >
+              ■ Остановить
+            </button>
+          ) : (
+            <button
+              onClick={runCode}
+              className="px-4 py-1.5 text-sm font-bold text-white bg-[color:var(--color-accent)] rounded-md hover:bg-[color:var(--color-accent-dark)] transition-colors cursor-pointer"
+            >
+              ▶ Запустить
+            </button>
+          )}
+        </div>
       </div>
 
       <div
