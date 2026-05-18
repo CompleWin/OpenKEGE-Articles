@@ -62,7 +62,7 @@ function isInsideString(line: string, position: number): boolean {
 export function PythonEditor({
   initialCode,
   minHeight = 160,
-  timeoutMs = 5000,
+  timeoutMs = 15000,
 }: PythonEditorProps) {
   const [code, setCode] = useState(initialCode)
   const [logs, setLogs] = useState<LogEntry[]>([])
