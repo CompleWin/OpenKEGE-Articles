@@ -8,12 +8,14 @@ import Header from '../components/Header.astro'
 import LikeButton from '../components/LikeButton.astro'
 
 type PostData = CollectionEntry<'articles'>['data'];
+
 type Props = Omit<PostData, 'category' | 'author'> & {
   category?: PostData['category'];
   author?: PostData['author'];
   slug?: string;
   showMeta?: boolean;
 };
+
 const {
   title,
   description,
@@ -29,7 +31,7 @@ const {
 
 <html lang="ru">
 <head>
-  <BaseHead title={title} description={description} />
+  <BaseHead title={title} description={description} image={heroImage}/>
 </head>
 
 <body class="min-h-screen flex flex-col text-paper">
