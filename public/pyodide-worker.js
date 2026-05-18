@@ -1,10 +1,3 @@
-// Web Worker для выполнения Python через Pyodide.
-// Кладётся в public/ — Astro отдаёт его как /pyodide-worker.js.
-//
-// Зачем: Pyodide крутится в фоновом потоке. Главный поток остаётся
-// отзывчивым, можно нажать «Стоп», поставить таймаут на выполнение,
-// и UI не зависает на while True.
-
 const PYODIDE_VERSION = '0.26.4'
 const PYODIDE_CDN = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`
 
@@ -37,8 +30,8 @@ self.onmessage = async (event) => {
   if (type === 'run') {
     try {
       const pyodide = await getPyodide()
+      self.postMessage({ id, type: 'ready' })
 
-      // Перехватываем stdout/stderr — отправляем построчно
       pyodide.setStdout({
         batched: (text) => {
           self.postMessage({ id, type: 'stdout', text })

@@ -1,11 +1,5 @@
-// Менеджер единого Pyodide-воркера для всей страницы.
-// Все PythonEditor используют один и тот же воркер — Pyodide грузится
-// один раз, даже если редакторов несколько.
-//
-// При «Стоп» или таймауте воркер убивается через terminate() и пересоздаётся.
-// Остальные редакторы получают событие отмены и могут показать ошибку.
-
 type RunHandlers = {
+  onReady: () => void
   onStdout: (text: string) => void
   onStderr: (text: string) => void
   onDone: () => void
@@ -26,10 +20,11 @@ function createWorker(): Worker {
 
   w.onmessage = (event: MessageEvent) => {
     const { id, type, text, error } = event.data
-    // Игнорируем сообщения от устаревших запросов
     if (!activeRequest || activeRequest.id !== id) return
 
-    if (type === 'stdout') {
+    if (type === 'ready') {
+      activeRequest.handlers.onReady()
+    } else if (type === 'stdout') {
       activeRequest.handlers.onStdout(text)
     } else if (type === 'stderr') {
       activeRequest.handlers.onStderr(text)
@@ -50,17 +45,11 @@ function ensureWorker(): Worker {
   return worker
 }
 
-/**
- * Запустить код Python. Возвращает функцию отмены.
- * Если уже идёт другой запуск — он будет принудительно остановлен.
- */
 export function runPython(code: string, handlers: RunHandlers): () => void {
-  // Если уже что-то выполняется — отменяем
   if (activeRequest) {
     const previous = activeRequest
     activeRequest = null
     previous.handlers.onError('Запуск прерван другим редактором')
-    // Убиваем воркер, чтобы остановить выполнение в нём
     if (worker) {
       worker.terminate()
       worker = null
@@ -72,12 +61,10 @@ export function runPython(code: string, handlers: RunHandlers): () => void {
   activeRequest = { id, handlers }
   w.postMessage({ id, type: 'run', code })
 
-  // Возвращаем функцию отмены
   return () => {
-    if (activeRequest?.id !== id) return // Уже завершилось
+    if (activeRequest?.id !== id) return
     activeRequest = null
     handlers.onError('Выполнение остановлено')
-    // Hard kill — единственный способ прервать зависший Python
     if (worker) {
       worker.terminate()
       worker = null
@@ -85,10 +72,6 @@ export function runPython(code: string, handlers: RunHandlers): () => void {
   }
 }
 
-/**
- * Проверить, прогрет ли уже Pyodide.
- * Полезно для UI: если да — не показываем «Загружаю Python...».
- */
 export function isPyodideReady(): boolean {
   return worker !== null && activeRequest === null
 }

@@ -67,7 +67,7 @@ export function PythonEditor({
   const [code, setCode] = useState(initialCode)
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [status, setStatus] = useState<'idle' | 'running'>('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'running'>('idle')
 
   const cancelRef = useRef<(() => void) | null>(null)
   const timeoutRef = useRef<number | null>(null)
@@ -82,7 +82,7 @@ export function PythonEditor({
   const runCode = useCallback(() => {
     setError(null)
     setLogs([])
-    setStatus('running')
+    setStatus('loading')
 
     const capturedLogs: LogEntry[] = []
 
@@ -96,6 +96,15 @@ export function PythonEditor({
     }
 
     cancelRef.current = runPython(code, {
+      onReady: () => {
+        setStatus('running')
+        timeoutRef.current = window.setTimeout(() => {
+          if (cancelRef.current) {
+            cancelRef.current()
+            setError(`Превышено время выполнения (${timeoutMs / 1000} сек).`)
+          }
+        }, timeoutMs)
+      },
       onStdout: (text) => {
         capturedLogs.push({ type: 'log', text })
         setLogs([...capturedLogs])
@@ -112,15 +121,6 @@ export function PythonEditor({
         finish()
       },
     })
-
-    timeoutRef.current = window.setTimeout(() => {
-      if (cancelRef.current) {
-        cancelRef.current()
-        setError(
-          `Превышено время выполнения (${timeoutMs / 1000} сек). Возможно, бесконечный цикл?`
-        )
-      }
-    }, timeoutMs)
   }, [code, timeoutMs])
 
   const stopCode = useCallback(() => {
@@ -195,7 +195,7 @@ export function PythonEditor({
     </Highlight>
   )
 
-  const isBusy = status === 'running'
+  const isBusy = status !== 'idle'
 
   return (
     <div className="not-prose my-8 p-6 bg-[color:var(--color-soft)]/40 border border-[color:var(--color-soft)] rounded-xl">
@@ -268,9 +268,14 @@ export function PythonEditor({
       </div>
 
       <div className="min-h-[60px] px-4 py-3 font-mono text-sm leading-relaxed bg-white border border-[color:var(--color-soft)] rounded-lg whitespace-pre-wrap break-words">
+        {status === 'loading' && (
+          <div className="text-[color:var(--color-muted)] italic">
+            Загружается интерпретатор Python...
+          </div>
+        )}
         {status === 'running' && logs.length === 0 && (
           <div className="text-[color:var(--color-muted)] italic">
-            Выполняю код ...
+            Выполняется код...
           </div>
         )}
         {logs.map((entry, i) => (
