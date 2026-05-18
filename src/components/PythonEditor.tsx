@@ -1,56 +1,21 @@
+import './prism-python-setup'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import Editor from 'react-simple-code-editor'
 import { Highlight, type PrismTheme } from 'prism-react-renderer'
 import { runPython } from './pyodide-manager'
+import  { themes, type ThemeName } from './python-themes.ts'
+
 
 export interface PythonEditorProps {
   initialCode: string
   minHeight?: number
   timeoutMs?: number
+  theme?: ThemeName | PrismTheme
 }
 
 type LogEntry = { type: 'log' | 'error'; text: string }
 
-
-
-const customTheme: PrismTheme = {
-  plain: {
-    color: 'rgb(15 18 25)',
-    backgroundColor: 'transparent',
-  },
-  styles: [
-    {
-      types: ['comment', 'prolog', 'doctype', 'cdata'],
-      style: { color: 'rgb(96 115 159)', fontStyle: 'italic' },
-    },
-    {
-      types: ['string', 'attr-value'],
-      style: { color: 'rgb(117 4 141)' },
-    },
-    {
-      types: ['number', 'boolean'],
-      style: { color: '#2337ff' },
-    },
-    {
-      types: ['keyword', 'tag', 'operator', 'builtin'],
-      // @ts-ignore
-      style: { color: '#000d8a', fontWeight: 600 },
-    },
-    {
-      types: ['function', 'function-variable'],
-      style: { color: '#2337ff' },
-    },
-    {
-      types: ['punctuation'],
-      style: { color: 'rgb(96 115 159)' },
-    },
-    {
-      types: ['variable', 'attr-name'],
-      style: { color: 'rgb(15 18 25)' },
-    },
-  ],
-}
 
 function isInsideString(line: string, position: number): boolean {
   const before = line.slice(0, position)
@@ -63,6 +28,7 @@ export function PythonEditor({
   initialCode,
   minHeight = 160,
   timeoutMs = 15000,
+  theme = 'idle',
 }: PythonEditorProps) {
   const [code, setCode] = useState(initialCode)
   const [logs, setLogs] = useState<LogEntry[]>([])
@@ -71,6 +37,8 @@ export function PythonEditor({
 
   const cancelRef = useRef<(() => void) | null>(null)
   const timeoutRef = useRef<number | null>(null)
+
+  const activeTheme: PrismTheme = typeof theme === 'string' ? themes[theme] : theme
 
   useEffect(() => {
     return () => {
@@ -176,7 +144,7 @@ export function PythonEditor({
   }
 
   const highlightCode = (codeToHighlight: string) => (
-    <Highlight code={codeToHighlight} language="python" theme={customTheme}>
+    <Highlight code={codeToHighlight} language="python" theme={activeTheme}>
       {({ tokens, getLineProps, getTokenProps }) => (
         <>
           {tokens.map((line, i) => {
