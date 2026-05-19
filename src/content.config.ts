@@ -1,7 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { CATEGORIES } from './consts.ts'
+import { CATEGORIES, TELEGRAM_ME } from './consts.ts'
 
 const articles = defineCollection({
 	loader: glob({ base: './src/content/articles', pattern: '**/*.{md,mdx}' }),
@@ -14,6 +14,7 @@ const articles = defineCollection({
 			heroImage: z.optional(image()),
       category: z.enum(CATEGORIES),
       author: z.string().default('Николай'),
+      authorLink: z.string().default(TELEGRAM_ME),
 		}),
 });
 
