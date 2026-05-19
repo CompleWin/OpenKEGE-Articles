@@ -29,6 +29,7 @@
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
     "sharp": "^0.34.3",
+    "spoiled": "^0.5.0",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {

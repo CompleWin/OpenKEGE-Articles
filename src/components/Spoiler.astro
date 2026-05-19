@@ -1,0 +1,29 @@
+---
+import type { ComponentProps } from 'react'
+import { Spoiler as Spoiled } from 'spoiled'
+
+type Props = Partial<Omit<ComponentProps<typeof Spoiled>, 'children'>>
+
+const {
+  revealOn = 'click',
+  theme = 'light',
+  density = 0.14,
+  accentColor = 'black',
+  tagName = 'div',
+  className = 'cursor-pointer',
+  ...rest
+} = Astro.props
+---
+
+<Spoiled
+  client:only="react"
+  revealOn={revealOn}
+  theme={theme}
+  density={density}
+  accentColor={accentColor}
+  tagName={tagName}
+  className={className}
+  {...rest}
+>
+  <slot />
+</Spoiled>
