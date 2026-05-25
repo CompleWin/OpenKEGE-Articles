@@ -160,6 +160,14 @@ code, pre {
   background-color: rgba(229, 233, 240, 0.3);
 }
 
+.prose summary {
+  padding-bottom: 0.5rem;
+}
+
+.prose details {
+  transition: all;
+}
+
 a.link {
   color: var(--color-link) !important;
 }
