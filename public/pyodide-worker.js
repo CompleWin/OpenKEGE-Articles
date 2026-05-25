@@ -33,24 +33,23 @@ self.onmessage = async (event) => {
       self.postMessage({ id, type: 'ready' })
 
       pyodide.setStdout({
-        batched: (text) => {
-          self.postMessage({ id, type: 'stdout', text })
-        },
+        batched: (text) => self.postMessage({ id, type: 'stdout', text }),
       })
       pyodide.setStderr({
-        batched: (text) => {
-          self.postMessage({ id, type: 'stderr', text })
-        },
+        batched: (text) => self.postMessage({ id, type: 'stderr', text }),
       })
 
+      const globals = pyodide.toPy({})
       try {
-        await pyodide.runPythonAsync(code)
+        await pyodide.runPythonAsync(code, { globals })
         self.postMessage({ id, type: 'done' })
       } catch (err) {
         const msg = err.message || String(err)
         const lines = msg.split('\n').filter((l) => l.trim())
         const errorLine = lines[lines.length - 1] || msg
         self.postMessage({ id, type: 'error', error: errorLine })
+      } finally {
+        globals.destroy()
       }
     } catch (err) {
       self.postMessage({ id, type: 'error', error: String(err) })
