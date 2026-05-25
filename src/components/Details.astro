@@ -1,0 +1,35 @@
+﻿---
+type Props = {
+  summary: string
+  open?: boolean
+  className?: string
+}
+
+const { summary, open = false, className = '' } = Astro.props
+---
+
+<details
+  open={open}
+  class:list={[
+    'group my-5 rounded-lg border border-soft bg-white px-4 py-3 transition-colors',
+    className,
+  ]}
+>
+  <summary
+    class="flex cursor-pointer list-none items-center gap-2 font-semibold text-ink hover:text-accent [&::-webkit-details-marker]:hidden"
+  >
+    <svg
+      class="h-4 w-4 shrink-0 transition-transform group-open:rotate-90"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M7 5l6 5-6 5V5z" />
+    </svg>
+    {summary}
+  </summary>
+
+  <div class="prose mt-3">
+    <slot />
+  </div>
+</details>
