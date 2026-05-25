@@ -1,0 +1,8 @@
+﻿---
+import { Image } from 'astro:assets';
+const { src, alt = '', caption } = Astro.props;
+---
+<figure class="py-5">
+  <Image src={src} alt={alt} />
+  <figcaption class="italic text-center">{caption}</figcaption>
+</figure>
