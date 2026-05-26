@@ -260,7 +260,7 @@ TypeError: 'int' object is not iterable
 
  ```python
   n = 10
-  if n > 0:
+  if n > 0: # было пропущеное двоеточие
       print(n)
   ```
 </Details>
@@ -288,8 +288,8 @@ TypeError: 'int' object is not iterable
   print(n)
 
   if n > 0:
-  print("положительное")
-  print(n)
+      print("положительное")
+      print(n) # добавил пробел
   ```
 </Details>
 
@@ -309,8 +309,8 @@ TypeError: 'int' object is not iterable
 
   ```python
   n = 15 % 10
-  if n == 5:
-  print("пять")
+  if n == 5: # ==, вместо =
+      print("пять")
   ```
 
 </Details>
@@ -328,7 +328,7 @@ TypeError: 'int' object is not iterable
 <Details summary="Исправление">
 
   ```python
-  print(sum([x for x in range(10) if x % 2 == 0]))
+  print(sum([x for x in range(10) if x % 2 == 0])) # были незакрыты квадратная и круглая скобка
   ```
 
 </Details>
@@ -369,17 +369,291 @@ print(*a)`}
 <Details summary="Исправление">
 
   ```python
-  my_list = [1, 2, 3]
-  a = list(range(5))   # TypeError: 'list' object is not callable
+  my_list = [1, 2, 3] # дал имя переменной, отличное от list
+  a = list(range(5))
   ```
 
 </Details>
 
 ### Ошибки во время выполнения
 #### 1. Выход за пределы списка
-```python
-# IndexError: list index out of range
-a = [10, 20, 30]
-for i in range(len(a)):
-    print(a[i], a[i + 1])
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# IndexError: list index out of range
+  a = [10, 20, 30]
+  for i in range(len(a)):
+      print(a[i], a[i + 1])`}
+/>
+
+<Details summary="Исправление">
+
+  ```python
+  a = [10, 20, 30]
+  for i in range(len(a) - 1): # добавили -1 в range
+      print(a[i], a[i + 1])
+  ```
+
+</Details>
+
+#### 2. Обращение к несуществующей переменной
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# NameError: name 'summ' is not defined. Did you mean: 'summa'?
+  summa = 0
+  for i in range(10):
+      summa += i
+  print(summ)`}
+/>
+
+<Details summary="Исправление">
+
+  ```python
+  summa = 0
+  for i in range(10):
+      summa += i
+  print(summa) #  было summ, а переменная называется summa
+  ```
+
+</Details>
+
+#### 3. Сложение строк и целых чисел
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# TypeError: can only concatenate str (not "int") to str
+  n = 67
+  n2 = ""
+  while n > 0:
+      n2 += n % 2
+      n = n // 2
+
+  n2 = n2[::-1]
+  print("Ответ:", n2)`}
+/>
+
+<Details summary="Исправление">
+
+  ```python
+  n = 67
+  n2 = ""
+  while n > 0:
+      n2 += str(n % 2) # переводим в str и складываем
+      n = n // 2
+
+  n2 = n2[::-1]
+  print("Ответ:", n2)
+  ```
+
+</Details>
+
+#### 4. Сравнение строк и чисел
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# TypeError: '>' not supported between instances of 'str' and 'int'
+  n = '67'
+  if n > 10:
+      print("много")
+  `}
+/>
+
+<Details summary="Исправление">
+
+  ```python
+  n = '67'
+  if int(n) > 10: # переводим в int для корректного сравнения
+      print("много")
+  ```
+
+</Details>
+
+> Внимание! Нужно быть осторожным, потому что операторы `==` и `!=` не выдают ошибку, когда сравнивают строку и число. Из-за такой ошибки многие теряют баллы, потому что очень часто приходится работать со строками, но сравнивать их с числами. Будьте внимательным, особенно в номере 8, когда пишите `if num[0] != 0` это не правильно! Обязательно нужно сравнивать строку со строкой, иначе данное условие всегда будет истинно! Как было бы хорошо, если бы Python выдавал ошибку на такую запись...
+
+#### 5. Итерация по числу
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# TypeError: 'int' object is not iterable
+  n = 123
+  sum_digits = 0
+  for i in n:
+      sum_digits += i
+  print("Сумма цифр:", sum_digits)
+  `}
+/>
+
+<Details summary="Исправление">
+
+  ```python
+  n = 123
+  sum_digits = 0
+  for i in str(n): # проходимся теперь по строке
+      sum_digits += int(i) # прибавляем целое число
+  print("Сумма цифр:", sum_digits)
+  ```
+
+</Details>
+
+#### 6. Невалидный литерал для 10 системы счисления
+
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# ValueError: invalid literal for int() with base 2
+  n = 123
+  n2 = bin(n)[2:]
+  n2 = n2 + bin(n2.count('1')) # прибавляем сумму цифр двоичной записи
+  print(int(n2, 2))
+  `}
+/>
+
+<Details summary="Исправление">
+
+  ```python
+  n = 123
+  n2 = bin(n)[2:]
+  n2 = n2 + bin(n2.count('1'))[2:] # взять срез
+  print(int(n2, 2))
+  ```
+
+  В ошибке говорилось `ValueError: invalid literal for int() with base 2: '11110110b110'`, показана часть строки, на которую ругается интерпетатор. Мы видим букву b, которую мы не можем конвертировать из 2-ой в 10-ую.
+
+</Details>
+
+> Такая ошибка может возникнуть не только после перевода из 2-ой в 10-ую, но суть ее всегда одна. Функция `int` пытается перевести строку в 10-ую из той, которую вы укажите (по умолчанию это 10-ая), но сталкивается с проблемой, что такого литерала нету в такой системе счисления и выбрасывает ошибку. Если бы в примере система была не 2-чная, а допустим 12-ричная, то ошибки бы не было, потому что цифра `b` есть в алфавите 12-ричной системе счисления (можете проверить, вернув код каким он был и поменять в `int` цифру с 2 на 12)
+
+#### 7. Деление на ноль
+
+К примеру возьмем алгоритм поиска делителей, типичное задание 25
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# ZeroDivisionError: integer modulo by zero
+  n = 12
+  for d in range(0, n):
+      if n % d == 0:
+          print(d)
+  `}
+/>
+
+<Details summary="Исправление">
+
+  ```python
+  n = 12
+  for d in range(1, n + 1): # перебираем от 1 и до числа включетельно
+      if n % d == 0:
+          print(d)
+  ```
+
+  Деление такое `%` и такое `/` и даже такое `//` все одно и тоже деление, и на ноль нельзя делить никаким делением 🤓
+
+</Details>
+
+#### 8. Ошибка глубины рекурсии
+
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# RecursionError: maximum recursion depth exceeded
+  def F(n):
+      if n <= 1:
+          return 1
+      if n > 1:
+          return F(n - 1) + n
+
+  print(F(100000))
+`}
+/>
+
+<Details summary="Исправление">
+
+  ```python
+  from functools import *
+
+  @lru_cache()
+  def F(n):
+      if n <= 1:
+          return 1
+      if n > 1:
+          return F(n - 1) + n
+
+  for n in range(1,100000):
+      F(n)
+
+  print(F(100000))
+  ```
+
+  > ОЧЕНЬ ВАЖНО! Если в задачи ЕГЭ у вас выпала ошибка глубины рекурсии, то НЕ НАДО: а) повышать ее через `sys.setrecursionlimit` и б) писать `@lru_cache(None)`. Никогда не пишите `None` внутри `@lru_cache()`. По умолчанию `@lru_cache()` сохраняет последние 128 значений в своем кэше, когда вы пишите `None` вы сохраняете АБСОЛЮТНО ВСЕ значения, что вероятно переполнет вашу оперативную память и крашнит компьютер. В теории, если по умолчанию `@lru_cache()` программа все равно выдает ошибку глубины рекурсии, то можно понемного повышать значение внутри `@lru_cache()`, начать можно с 200, 300, 400, ... и т.д
+
+</Details>
+
+#### 9. Ошибка ключа в словаре
+
+Особенно актуально в задании 12 (потому что в других мы словарями не пользуюмся), исправлений здесь делать не надо, только посмотреть на то, что выдает программа, когда нашего ключа не находится в словаре.
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# KeyError: ('0', 0)
+  commands = {
+      (" ", 0): (" ", -1, 1),
+      (" ", 1): (" ", 2, 1),
+      ("0", 1): ("1", -1, 1),
+      ("1", 1): ("0", -1, 1)
+  }
+
+  print(commands[ ("0", 0) ])
+`}
+/>
+
+Вариантами исправления в реальной задачи может быть два, в зависимости от того, какая именно ошибка у вас: 1) Вы не дописали все необходимые команды, 2) Каким-то образом, вы обратились по символу с не тем состоянием, которым надо было. Это при условии, что вы проверили, что все команды были переписаны правильно. Тогда нужно проверить, правильно ли вы указали местоположение головки в начальный момент (`i = 0` если в ближайшей слева и `i = len(s) - 1` если в ближайшей справа). Проверить какое у вас начальное состояние (должно быть `q = 0`), выходите ли вы из бесконечного цикла, если `cmd[1] == 2`, точно ли у вас меняется состоянии во время выполнения программы (`q = cmd[2]`), точно ли вы перемещаете головку дальше (`i += cmd[1]`), точно ли вы меняете символ перед всеми остальными действиями (`s[i] = cmd[0]`)...
+
+#### 10. Ошибка отсуствия файла
+
+
+<PythonEditor
+  client:only="react"
+  initialCode={`# FileNotFoundError: [Errno 44] No such file or directory: '17.txt'
+  f = open('17.txt')
+  nums = [int(x) for x in f]
+  print(*nums)
+`}
+/>
+
+Исправить ошибку здесь не получится, поэтому распишу профилактику этой ошибку в реальной ситуации.
+1) Совет! Всегда помещайте файл, который хотите запустить в Python вместе с самим файлом Python. Тогда в таком случае, достаточно лишь прописать только название файла `f = open("17.txt")`
+
+```text
+задачи/
+├── 17.txt
+├── 17.py
 ```
+
+2) Если у вас файлы хранятся в отдельной папки, но эта папка находится в одном месте с файлом Python. Тогда пишем название папки, слэш название файла `f = open("files/17.txt")`
+
+```text
+задачи/
+├── files/
+│   ├── 17.txt
+├── 17.py
+```
+
+3) Самый нерекомендуемый вариант -- указать полный путь до файла. Для этого можно кликнуть ПКМ по файлу, копировать как путь. Получится что-то такое `"C:\Movies\TheBoysS0508.mkv"` и теперь это можно вставить в `open`. Но этот способ самый нерекомендуемый, потому что при вставке придется экранировать слэши, либо ставить букву `r` перед кавычками. Иначе будет ошибка -> `(unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape`. Вариант исправления `f = open(r"C:\Movies\TheBoysS0508.mkv")`
+
+#### 11. Ошибка с файлом в 27 задании
+
+<PythonEditor
+  client:only="react"
+  initialCode={`
+`}
+/>
+
+<Details summary="Исправление">
+
+  ```python
+
+  ```
+
+
+</Details>
